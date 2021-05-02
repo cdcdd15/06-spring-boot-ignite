@@ -1,4 +1,4 @@
-package com.cosmin.ignite.todo;
+package com.cosmin.ignite.beans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class TodoJpaResource {
+public class EmployeeController {
 
 	@Autowired
 	private EmployeeIgniteService employeeIgniteService;

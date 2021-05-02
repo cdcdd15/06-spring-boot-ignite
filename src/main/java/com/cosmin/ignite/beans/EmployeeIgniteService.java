@@ -1,4 +1,4 @@
-package com.cosmin.ignite.todo;
+package com.cosmin.ignite.beans;
 
 import org.springframework.stereotype.Service;
 

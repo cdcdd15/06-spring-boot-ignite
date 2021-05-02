@@ -1,4 +1,4 @@
-package com.cosmin.rest.webservices.restfulwebservices;
+package com.cosmin.ignite;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
