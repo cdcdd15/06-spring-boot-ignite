@@ -34,11 +34,18 @@ public class EmployeeController {
 		return new ResponseEntity<EmployeeDTO>(dto, HttpStatus.OK);
 	}
 
-	@GetMapping("/ignite")
-	public List<EmployeeDTO> processAndFindAll() {
-		return this.employeeIgniteService.processAndFindAll();
+	@GetMapping("/ignite/process-all-records-on-server-nodes")
+	public ResponseEntity<Boolean> processAllRecordsOnServerNodes() {
+		boolean b = this.employeeIgniteService.processAllRecordsOnServerNodes();
+		return new ResponseEntity<Boolean>(b, HttpStatus.OK);
 	}
 
+	@GetMapping("/ignite")
+	public ResponseEntity<List<EmployeeDTO>> findAll() {
+		List<EmployeeDTO> list = this.employeeIgniteService.findAll();
+		return new ResponseEntity<List<EmployeeDTO>>(list, HttpStatus.OK);
+	}
+	
 //	@GetMapping("/jpa/users/todos/{id}")
 //	public Todo getTodo(@PathVariable String username, @PathVariable long id) {
 //		return todoJpaRepository.findById(id).get();

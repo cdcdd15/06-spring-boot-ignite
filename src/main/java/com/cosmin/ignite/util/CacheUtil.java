@@ -17,6 +17,7 @@ import com.cosmin.ignite.model.EmployeeDTO;
 
 public class CacheUtil {
 	public final static String cacheName = "cosminCache";
+	public final static String xmlConfig = "C:\\javaDev\\apache-ignite\\examples\\config\\example-ignite.xml";
 	public static IgniteConfiguration createCacheConfiguration() {
 		// se da ca arg cashe name
 		CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration(cacheName);

@@ -19,20 +19,19 @@ import com.cosmin.ignite.util.CacheUtil;
 @Service
 public class EmployeeIgniteService{
 	public void insertDTOs(EmployeeDTO dto) {
-		IgniteConfiguration cfg = CacheUtil.createCacheConfiguration();
+//		IgniteConfiguration cfg = CacheUtil.createCacheConfiguration();
 		Ignition.setClientMode(true);
-		try (Ignite ignite = Ignition.start(cfg)) {
+		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
 			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
 			cache.put(dto.getId(), dto);
 		}
 		System.out.println("end InsertDTOs");
 	}
 
-	public List<EmployeeDTO> processAndFindAll() {
-		IgniteConfiguration cfg = CacheUtil.createCacheConfiguration();
+	public boolean processAllRecordsOnServerNodes() {
+//		IgniteConfiguration cfg = CacheUtil.createCacheConfiguration();
 		Ignition.setClientMode(true);
-		List<EmployeeDTO> list = new ArrayList<EmployeeDTO>();
-		try (Ignite ignite = Ignition.start(cfg)) {
+		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
 			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
 			Set<Integer> keys = CacheUtil.fetchAllKeysFromCache(ignite, cache);
 			ClusterGroup clusterGroup = ignite.cluster().forRemotes();
@@ -42,14 +41,28 @@ public class EmployeeIgniteService{
 					Map<Integer, EmployeeDTO> dtos = cache.getAll(keys);
 					for (Integer key : keys) {
 						EmployeeDTO dto = cache.get(key);
-						System.out.println("Executing Employee job " + dto.getName());
 						dto.setSalary(dto.getSalary() + dto.getSalary() / 10);
+						System.out.println(
+								"Executing Employee job for name=" + dto.getName() + " and salary=" + dto.getSalary());
+//						employeeList.add(dto);
 						cache.put(key, dto);
-						list.add(dto);
 					}
 				}
 			});
 		}
-		System.out.println("end ProcessDTOs");		return null;
+		System.out.println("end ProcessDTOs");
+		return true;
+	}
+
+	public List<EmployeeDTO> findAll() {
+		List<EmployeeDTO> employeeList = null;
+		Ignition.setClientMode(true);
+		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
+			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
+			Set<Integer> keys = CacheUtil.fetchAllKeysFromCache(ignite, cache);
+			Map<Integer, EmployeeDTO> map = cache.getAll(keys);
+			employeeList = new ArrayList(map.values());
+		}
+		return employeeList;
 	}
 }
