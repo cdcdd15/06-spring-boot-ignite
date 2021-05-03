@@ -65,4 +65,13 @@ public class EmployeeIgniteService{
 		}
 		return employeeList;
 	}
+
+	public boolean deleteCache() {
+		Ignition.setClientMode(true);
+		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
+			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
+			cache.destroy();
+		}
+		return true;
+	}
 }
