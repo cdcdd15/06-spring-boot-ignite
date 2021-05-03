@@ -9,8 +9,8 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cluster.ClusterGroup;
-import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.lang.IgniteRunnable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.cosmin.ignite.model.EmployeeDTO;
@@ -18,10 +18,14 @@ import com.cosmin.ignite.util.CacheUtil;
 
 @Service
 public class EmployeeIgniteService{
+	
+	@Value("${my.ignite.config.xml}")
+	private String igniteConfigXml;
+	
 	public void insertDTOs(EmployeeDTO dto) {
 //		IgniteConfiguration cfg = CacheUtil.createCacheConfiguration();
 		Ignition.setClientMode(true);
-		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
+		try (Ignite ignite = Ignition.start(this.igniteConfigXml)) {
 			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
 			cache.put(dto.getId(), dto);
 		}
@@ -31,7 +35,7 @@ public class EmployeeIgniteService{
 	public boolean processAllRecordsOnServerNodes() {
 //		IgniteConfiguration cfg = CacheUtil.createCacheConfiguration();
 		Ignition.setClientMode(true);
-		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
+		try (Ignite ignite = Ignition.start(this.igniteConfigXml)) {
 			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
 			Set<Integer> keys = CacheUtil.fetchAllKeysFromCache(ignite, cache);
 			ClusterGroup clusterGroup = ignite.cluster().forRemotes();
@@ -57,7 +61,7 @@ public class EmployeeIgniteService{
 	public List<EmployeeDTO> findAll() {
 		List<EmployeeDTO> employeeList = null;
 		Ignition.setClientMode(true);
-		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
+		try (Ignite ignite = Ignition.start(this.igniteConfigXml)) {
 			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
 			Set<Integer> keys = CacheUtil.fetchAllKeysFromCache(ignite, cache);
 			Map<Integer, EmployeeDTO> map = cache.getAll(keys);
@@ -68,7 +72,7 @@ public class EmployeeIgniteService{
 
 	public boolean deleteCache() {
 		Ignition.setClientMode(true);
-		try (Ignite ignite = Ignition.start(CacheUtil.xmlConfig)) {
+		try (Ignite ignite = Ignition.start(this.igniteConfigXml)) {
 			IgniteCache<Integer, EmployeeDTO> cache = ignite.getOrCreateCache(CacheUtil.cacheName);
 			cache.destroy();
 		}
