@@ -1,0 +1,37 @@
+version: '3.7'
+networks:
+  spring-ignite-net:
+    external: true
+services:
+  micro-2:
+    image: apacheignite/ignite:2.7.5
+    volumes:
+      - C:/javaDev/apache-ignite/examples/config:/ignite-configs
+      - C:/javaDev/libs/:/opt/ignite/apache-ignite/libs/user_libs
+    environment:
+      CONFIG_URI: /ignite-configs/example-ignite.xml
+    container_name: ignite_server_node
+    ports:
+      - 10800:10800
+      - 8080:8080
+      - 42112:42112
+      - 47500:47500
+      - 47100:47100
+    restart: always
+    networks:
+      - spring-ignite-net
+
+  micro-1:
+    image: cosdin/spring-ignite:0.0.1-SNAPSHOT
+    container_name: ignite_client_node_sb
+    ports:
+      - 5000:5000
+    restart: always
+    volumes:
+      - C:/javaDev/apache-ignite/examples/config:/ignite-configs
+    environment:
+      IGNITE_CONFIG_XML_PATH: /ignite-configs/example-ignite.xml
+    depends_on:
+      - ignite_server_node
+    networks:
+      - spring-ignite-net
